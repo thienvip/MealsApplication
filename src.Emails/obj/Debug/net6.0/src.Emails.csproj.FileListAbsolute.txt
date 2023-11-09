@@ -1,0 +1,12 @@
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\bin\Debug\net6.0\src.Emails.deps.json
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\bin\Debug\net6.0\src.Emails.dll
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\bin\Debug\net6.0\src.Emails.pdb
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\src.Emails.csproj.AssemblyReference.cache
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\src.Emails.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\src.Emails.AssemblyInfoInputs.cache
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\src.Emails.AssemblyInfo.cs
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\src.Emails.csproj.CoreCompileInputs.cache
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\src.Emails.dll
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\refint\src.Emails.dll
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\src.Emails.pdb
+C:\Users\thien.van.quach\source\repos\MealWebApp\src.Emails\obj\Debug\net6.0\ref\src.Emails.dll
