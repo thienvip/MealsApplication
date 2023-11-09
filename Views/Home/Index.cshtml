@@ -1,0 +1,66 @@
+﻿
+@using Microsoft.Extensions.Options;
+@using src.Core;
+@using src.Web.Common.Models.ParentViewModels
+@{
+    ViewBag.Title = Constants.MainPages.Home;
+}
+@model ParentEmailViewModel;
+
+<div class="box box-solid">
+    <div class="box-body">
+        <div class="form-group">
+            <h5 class="text-center text-bold" style="line-height: 1.5;">
+                <span class="text-green" style="font-size: 14px;">
+                    @SharedLocalizer["label_welcome_message"]
+                </span>
+            </h5>
+            <div class="col-lg-12">
+                <P>
+                    - @SharedLocalizer["label_required_input_for_login"]
+                </P>
+                <p>
+                    - @SharedLocalizer["label_forgot_registered_information"]
+                </p>
+            </div>
+        </div>
+
+        <form id="frmParentSubmit" asp-controller="Parent" asp-action="GetByEmailAddress"
+              asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" role="form">
+            <div class="form-group text-center">
+                <div class="col-md-12">
+                    <label class="control-label text-center">@SharedLocalizer["label_textbox_email_phone_login"]:</label>
+                    <input type="text" class="form-control" asp-for="email">
+                    <button type="submit" style="margin-top: 10px;" class="btn btn-success btn-flat btn-block">@SharedLocalizer["btn_continue"]</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#email").focus();
+
+    $("#frmParentSubmit").validate({
+        errorElement: 'span',
+        errorElementClass: 'input-validation-error',
+        errorClass: 'field-validation-error',
+        rules: {
+            email:
+            {
+                required: true,
+                
+            },
+        },
+        messages: {
+            email: {
+                required: "@SharedLocalizer["EnterEmail"]"
+            }
+        },
+        submitHandler: function (form) {
+            form.submit();
+        }
+            
+    });
+
+</script>

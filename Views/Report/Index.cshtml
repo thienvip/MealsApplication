@@ -1,0 +1,214 @@
+﻿@using src.Core;
+@using src.Core.Domains
+@using src.Web.Common.Models.HandBookViewModels
+@using Newtonsoft.Json
+
+@{
+    ViewBag.Title = Constants.MainPages.Home;
+}
+@model IList<Campus>
+<style>
+    .dtable-container {
+        max-width: 100% !important;
+    }
+
+    table {
+        white-space: nowrap !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    .modal-dialog {
+        width: 75%;
+        margin: 0 auto;
+    }
+
+</style>
+<script src="~/js/moment.min.js"></script>
+@{
+    var campusCode = new List<string>();
+    if(Model != null)
+    foreach (var item in Model)
+    {
+        campusCode.Add(item.code);
+    }
+    // Serialize campusCode to JSON and embed it in JavaScript
+    var campusCodeJson = Newtonsoft.Json.JsonConvert.SerializeObject(campusCode);
+
+}
+<div class="box box-solid" >
+    <form class="form-horizontal" method="POST">
+        <div class="box-body">
+            <div class="form-group">
+                <label style="display:flex; align-items:center; justify-content:center; font-size:15px; text-transform:uppercase">@SharedLocalizer["title_report"]</label>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"> Campus: </label>
+                <div class="col-sm-7" style="position:relative">
+                    <select class="form-control select2 chosen-campus " multiple name="SelectedRoleIds[]"
+                            asp-items="@(new SelectList(Model, "code", "name"))" data-live-search="true" style="width: 100%">
+                    </select>   
+                    <button type="button"  id="find" style="position:absolute; cursor:pointer; top:1.8%; right:13px; border:none; height:97%; width:5%" ><i class="fa fa-search"></i> </button>     
+                </div>         
+                <div class="col-sm-3">
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-file-excel-o"></i>
+                            Export To Excel
+                        </button>
+                        <ul class="dropdown-menu" style="background:white; box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px; cursor: pointer">
+                            <li onclick ="exportToExcel('all')"><a  class="dropdown-item">All Students</a></li>
+                            <li onclick="exportToExcel('submitted')"><a class="dropdown-item">Submitted Students</a></li>
+                            <li onclick="exportToExcel('active')"><a class="dropdown-item">Active Meals</a></li>
+                        </ul>
+                    </div>
+                     
+                </div>
+            </div>
+            <div class="dtable-container">
+                <table class="table table-bordered table-hover "  style="width:100%;cursor:pointer" id="list-student">
+                    <thead>
+                        <tr class="bg-blue">
+                            <th>@SharedLocalizer["label_student_code"]</th>
+                            <th>@SharedLocalizer["label_student_name"]</th>
+                            <th>@SharedLocalizer["label_class"]</th>
+                            <th>@SharedLocalizer["label_grade"]</th>
+                            <th>@SharedLocalizer["label_campus"]</th>
+                            <th>@SharedLocalizer["authorization_status"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+        <div class="modal  fade" id="modalDefault" abindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg  " style="width:90%">
+                <div class="modal-content" >
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script type="text/javascript">
+
+    function ShowPopup(url) {
+        var modalId = 'modalDefault';
+        var modalPlaceholder = $('#' + modalId + ' .modal-dialog .modal-content');
+        $.get(url)
+            .done(function (response) {
+                modalPlaceholder.html(response);
+                popup = $('#' + modalId + '').modal({
+                    keyboard: false,
+                    backdrop: 'static'
+                });
+            });
+    }
+    $(document).keyup(function (e) {
+        if (e.key === "Escape") {
+            $('#modalDefault').modal('hide');
+        }
+    });
+
+   
+
+    $(document).ready(function () {
+        $('.select2').select2();
+
+        // Use the embedded campusCodeJson variable
+        var campusCodes = @Html.Raw(campusCodeJson);
+        firstFindClick = true;
+        
+        var dataTable = $("#list-student").DataTable({
+            "serverSide": true, // Enable server-side processing
+            "processing": true,
+            "paging": true, // Enable pagination
+            "info": false,
+            "pageLength": 20, // Number of records per page
+            "language": {
+                "emptyTable": "No data found."
+            },
+            "lengthChange": false,
+            "ajax": {
+                "url": '@Url.Action("GetStudentsByCampus", "Report")', // Use the Razor helper to generate the URL     
+                "type":"POST",
+                "data": function (d) {
+                    var campus = $(".chosen-campus").val();
+                    d.campusCode = (firstFindClick || campus.length === 0) ? campusCodes : campus;
+                    firstFindClick = false;
+                },
+                "dataType": 'json',
+                beforeSend: function (request) {                    
+                      request.setRequestHeader("RequestVerificationToken", $("[name='__RequestVerificationToken']").val());                   
+                },  
+                error: function (req, err) {
+                    alert('failure');
+                    HideLoadingMessage();
+                }
+            },
+            "columns": [
+                { data: 'studentCode' },
+                { data: 'studentName' },
+                { data: 'className' },
+                { data: 'gradeName' },
+                { data: 'campusName' },
+                {
+                    data: function (row) {
+                        return row.meals && row.meals.length > 1 ? "<div class='label label-success'>Submitted</div>" : "<div class='label label-danger'>Submitted</div>";
+                    }
+                }
+            ],
+            "scrollX": 'auto',          
+            rowCallback: function (row, data) {
+                        $(row).on("click", function () {
+                            var rowData = dataTable.row(this).data();
+                            if (rowData.meals && rowData.meals.length > 1) {
+                                ShowPopup("/Students/MealDetails?studenCode=" + rowData.studentCode);
+                            }
+                        });
+             },
+            columnDefs: [
+                    {
+                        "targets": 5,
+                        "className": "text-center",
+                    }
+            ],
+            order: [0, 'desc'],
+           
+        });
+
+        // Trigger data load on button click
+        $("#find").click(function () {
+            dataTable.ajax.reload();
+           
+        });
+    
+    })
+
+    function exportToExcel(type) {
+       
+        $.ajax({
+            url: '/Report/ExportToExcel',
+            type: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify({ listStudent: [], type: type }), // Pass an empty list or your data here
+            beforeSend: function (request) {
+                ShowLoadingMessage();
+                request.setRequestHeader("RequestVerificationToken", $("[name='__RequestVerificationToken']").val());
+            },
+            success: function (data) {       
+            },
+            error: function () {
+                alert('Failure');              
+            }          
+        }).done (function (data) {
+            window.location.href = '/Report/Download/?fileName=' + data.filename;
+            HideLoadingMessage();
+        });
+    }
+</script>

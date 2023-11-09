@@ -1,0 +1,146 @@
+﻿@using src.Core.Domains;
+@using src.Core;
+@using src.Core.Enums;
+
+@{
+    ViewBag.Title = Constants.MainPages.Home;
+}
+@model Parent;
+
+<style>
+    #validateCode {
+        padding-left: 9px;
+        letter-spacing: 33px;
+        border: 0;
+        background-image: linear-gradient(to left, black 70%, rgba(255, 255, 255, 0) 0%);
+        background-position: bottom;
+        background-size: 50px 1px;
+        background-repeat: repeat-x;
+        background-position-x: 35px;
+        width: 300px;
+        min-width: 310px;
+        font-size: 30px;
+    }
+
+    #divInner {
+        left: 0;
+        position: sticky;
+    }
+
+    #divOuter {
+        width: 300px;
+        overflow: hidden;
+    }
+
+    .centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+<div class="box box-solid">
+    <div class="box-header with-border text-center text-blue">
+        <h3 class="box-title">@SharedLocalizer["label_information_verification"]</h3>
+    </div>
+    <form class="form-horizontal" asp-controller="Verification" asp-action="CheckVerification"
+          asp-route-returnurl="@ViewData[" ReturnUrl"]" method="post">
+        <div class="box-body">
+            <h5 class="text-center">
+                @* <span>nhà trường đã gửi cho bạn một @(model.logintype == logintypeenum.email ? "email" :"sms") có mã số xác thực. để hoàn tất xác minh, quý phụ huynh *@
+                @*     vui lòng nhập mã xác thực gồm 6 chữ số/<i class="text-blue">vas has sent you @(model.logintype == logintypeenum.email ? "an email" :" a sms") with code *@
+                @*         verification. to complete the verify, please enter the verification code including 6 digits. *@
+                @*     </i>.</span> *@
+
+                <span>@SharedLocalizer["label_message_sent_verification_code",@Model.LoginType == LoginTypeEnum.Email ? "Email" :"SMS"]</span>
+            </h5>
+            @* @SharedLocalizer["label_message_sent_verification_code"]  *@
+            <div class="form-group centered">
+                <div id="divOuter">
+                    <div id="divInner">
+                        <input id="validateCode" name="validateCode" type="text" maxlength="6" pattern="[0-9]*"
+                               inputmode="numeric" required />
+
+                    </div>
+                </div>
+            </div>
+            <div class="form-group centered" style="padding-top: 20px;">
+                <span class="text-muted" id="timer"></span><br />
+            </div>
+            <div class="form-group centered">
+                <a id="resentOTP" class="btn bg-olive btn-flat margin">@SharedLocalizer["btn_resend_verification_code"]</a>
+            </div>
+        </div>
+        <div class="box-footer">
+            <div class="centered">
+                <button type="submit" id="Process" class="btn btn-block btn-success col-lg-2">
+                    <i class="fa fa-check-circle"></i>
+                    @SharedLocalizer["btn_continue"]
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    $('#Process').attr("disabled", "disabled");
+    $("#validateCode").val('');
+    $('#validateCode').on('input', function (evt) {
+        var value = evt.target.value
+        if (value.length == 6) {
+            $('#Process').removeAttr('disabled');
+        }
+        else {
+            $('#Process').attr("disabled", "disabled");
+        }
+    });
+    let timerOn = true;
+    function timer(remaining) {
+        $("#timer").show();
+        $("#resentOTP").hide();
+        var m = Math.floor(remaining / 60);
+        var s = remaining % 60;
+        m = m < 10 ? '0' + m : m;
+        s = s < 10 ? '0' + s : s;
+        document.getElementById('timer').innerHTML = "@SharedLocalizer["label_resend_OPT_in"] " + m + ':' + s;
+        remaining -= 1;
+        if (remaining >= 0 && timerOn) {
+            setTimeout(function () {
+                timer(remaining);
+            }, 1000);
+            return;
+        }
+        if (!timerOn) {
+            // Do validate stuff here
+            return;
+        }
+        $("#timer").hide();
+        $("#resentOTP").show();
+    }
+    timer(60);
+    $("#resentOTP").click(function () {
+        $.ajax({
+            type: 'POST',
+            url: "/Verification/resentSMS",
+            beforeSend: function (request) {
+                ShowLoadingMessage();
+                request.setRequestHeader("RequestVerificationToken", $("[name='__RequestVerificationToken']").val());
+            },
+            success: function (data) {
+                if (data.success) {
+                    ShowMessage("@SharedLocalizer["message_sent_new_validation_code"]")
+                    timer(60);
+                    HideLoadingMessage();
+                }
+                else {
+                    HideLoadingMessage();
+                    ShowMessageError(data.message);
+                    window.location.reload();
+                }
+            },
+            error: function () {
+                alert('failure');
+                HideLoadingMessage();
+            }
+        });
+    });
+</script>

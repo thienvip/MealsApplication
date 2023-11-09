@@ -1,0 +1,42 @@
+﻿@using MealApplication.Extensions;
+@using src.Core
+@using src.Web.Common
+
+
+@inject IUserSession UserSession
+
+<ul class="sidebar-menu" data-widget="tree">
+    <li class="header">MAIN NAVIGATION</li>
+
+    <li class="@(Html.IsMenuActive("/Administration/Dashboard") ? "active" : "") ">
+        <a href="~/Administration/Dashboard">
+            <i class="fa fa-desktop"></i>
+            <span>@Constants.MainPages.Dashboard</span>
+         </a>
+     </li>
+    @if (User.Identity.IsAuthenticated && UserSession.IsInRole(Constants.RoleNames.Administrator))
+    {
+        <li class="@(Html.IsMenuActive("/Administration/User") ? "active" : "")">
+            <a href="~/Administration/Users/Index">
+                <i class="fa fa-user"></i>
+                <span> @Constants.MainPages.Users</span>
+            </a>
+        </li>
+    }
+
+@*     <li class="@(Html.IsMenuActive("/Administration/Logs") ? "active" : "")">
+        <a href="~/Administration/Logs/Index">
+            <i class="fa fa-exclamation-triangle"></i>
+            <span>@Constants.MainPages.Logs</span>
+         </a>
+    </li>
+    @if (User.Identity.IsAuthenticated && UserSession.IsInRole(Constants.RoleNames.Administrator))
+    {
+        <li class="@(Html.IsMenuActive("/Administration/Notification") ? "active" : "")">
+            <a href="~/Administration/Notification">
+                <i class="fa fa-cog"></i>
+                <span>@Constants.MainPages.Notification</span>          
+            </a>
+        </li>
+    } *@
+</ul>

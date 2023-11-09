@@ -1,0 +1,95 @@
+﻿@using src.Core.Enums
+@using System.Linq
+@model IEnumerable<src.Core.Domains.Student>
+@{
+    var rowIindex = 1;
+    var rowIindex2 = 1;
+}
+<style>
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+    }
+
+    th,
+    td {
+        text-align: left;
+        padding: 8px;
+    }
+</style>
+<div style="overflow-x:auto;">
+    <table class="table table-striped">
+
+        <tr>
+            <th>No.</th>
+            <th>@SharedLocalizer["label_student_code"]</th>
+            <th>@SharedLocalizer["label_student_name"]</th>
+            <th>@SharedLocalizer["label_class"]</th>
+            <th>@SharedLocalizer["from_day_no_meal"]</th>
+            <th>@SharedLocalizer["to_day_no_meal"]</th>
+            <th>@SharedLocalizer["number_day_no_meal"]</th>
+            <th>@SharedLocalizer["meal_registration"]</th>
+            <th>@SharedLocalizer["label_date_created"]</th>
+            <th>@SharedLocalizer["authorization_status"]</th>
+            <td></td>
+        </tr>
+       
+        @foreach (var student in Model)
+        {
+            if(student.Meals.Count() > 0)
+            {
+                foreach (var meal in student.Meals.OrderByDescending(s => s.CreatedAt))
+                {
+                    <tr>
+                        <td>@rowIindex2</td>
+                        <td>@meal.StudentCode</td>
+                        <td>@meal.StudentName</td>
+                        <td>@student.ClassName</td>
+                        <td>@meal.FromDate.ToString("dd/MM/yyyy")</td>
+                        <td>@meal.ToDate.ToString("dd/MM/yyyy")</td>
+                        <td>@meal.TotalNumberofdays</td>
+                        <td>@(meal.MealRegistration == "AllDay" ? @SharedLocalizer["option_meal_registration_1"] : @SharedLocalizer["option_meal_registration_2"])</td>
+                        <td>
+                            @meal.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td>
+                            @if (@meal.Status == (int)@AuthorizationStatusEnum.Active)
+                            {
+                                <span class="label label-success " style="cursor:pointer;" onclick="UpdateStatusOfMeal(@meal.Id,@((int)AuthorizationStatusEnum.Expired))">@SharedLocalizer["label_active"]</span>
+                            }
+                            else
+                            {
+                                <span class="label label-danger" style="cursor:pointer" onclick="UpdateStatusOfMeal(@meal.Id,@((int)AuthorizationStatusEnum.Active))">@SharedLocalizer["label_inactive"]</span>
+                            }
+                        </td>
+                        <td>
+                            @if (meal.Status == (int)@AuthorizationStatusEnum.Active)
+                            {
+                                <div>
+                                    <a class="hide_in_success text-success" onclick="DeleteMeal(@meal.Id)"><i class="fa fa-trash "></i></a>
+                               
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    <a class="hide_in_success text-danger" onclick="DeleteMeal(@meal.Id)"><i class="fa fa-trash "></i></a>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                    rowIindex2++;
+                }
+
+            }
+           
+            rowIindex++;
+        }
+    </table>
+</div>
+<script>
+
+
+</script>

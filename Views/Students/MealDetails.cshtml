@@ -1,0 +1,96 @@
+﻿@using src.Core.Enums
+@using System.Linq
+@model IEnumerable<src.Core.Domains.Student>
+@{
+    Layout = null;
+    var rowIindex = 1;
+}
+<style>
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+    }
+
+    th,
+    td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    .modal-body {
+        max-height: 400px;
+        overflow-y: auto;
+        overflow-x:auto;
+    }
+</style>
+<div class="box box-solid  " style="margin-top:20px">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <div class="modal-title" style="display:flex; align-items:end">
+             <h4 style="font-weight:600">@SharedLocalizer["meal_history"]</h4>
+            <div class="box-header">              
+                    @Model.FirstOrDefault().StudentCode |  @Model.FirstOrDefault().StudentName | @Model.FirstOrDefault().CampusName | @Model.FirstOrDefault().ClassName
+            </div>
+        </div>
+    </div>
+    <div class="modal-body table-responsive text-nowrap" style="margin-bottom:10px; margin-right:20px;" >
+        <table class="table table-bordered table-striped" style="margin-bottom:-3px">
+            <tr class="bg-blue"> 
+                <th>No.</th>
+                <th>@SharedLocalizer["label_student_name"]</th>
+                <th>@SharedLocalizer["label_date_created"]</th>
+                <th>@SharedLocalizer["meal_registration"]</th>
+                <th>@SharedLocalizer["from_day_no_meal"]</th>
+                <th>@SharedLocalizer["to_day_no_meal"]</th>
+                <th>@SharedLocalizer["number_day_no_meal"]</th>
+                <th>@SharedLocalizer["reason"]</th>
+                <th>@SharedLocalizer["authorization_status"]</th>
+      
+            </tr>
+            @foreach (var student in Model.FirstOrDefault().Meals.OrderByDescending(s => s.CreatedAt))
+            {
+                <tr>
+                    <td>@rowIindex</td>
+                    <td>@student.StudentName</td>
+                    <td>
+                        @student.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                    </td>
+                    <td>@(student.MealRegistration == "AllDay" ? @SharedLocalizer["option_meal_registration_1"] : @SharedLocalizer["option_meal_registration_2"])</td>
+                    <td>@student.FromDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @student.FromDate.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @student.TotalNumberofdays
+                    </td>
+                    <td>
+                        @student.Reason
+                    </td>
+                    <td>
+                        @if (@student.Status == (int)@AuthorizationStatusEnum.Active)
+                        {
+                            <span class="label label-success " style="cursor:pointer;" onclick="UpdateStatusOfMeal(@student.Id,@((int)AuthorizationStatusEnum.Expired))">@SharedLocalizer["label_active"]</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger" style="cursor:pointer" onclick="UpdateStatusOfMeal(@student.Id,@((int)AuthorizationStatusEnum.Active))">@SharedLocalizer["label_inactive"]</span>
+                        }
+                    </td>
+                </tr>
+                rowIindex++;
+            }
+        </table>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default"  data-dismiss="modal">@SharedLocalizer["btn_cancel"]</button>
+       
+    </div>
+</div>
+<script>
+
+
+</script>
