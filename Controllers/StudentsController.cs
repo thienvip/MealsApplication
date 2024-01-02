@@ -125,8 +125,7 @@ namespace MealApplication.Controllers
                     {
                         if (data.Students.Count > 1 && data.Parent.ContactType == "div_delete_" + rowIndex)
                         {
-                            continue; 
-                        
+                            continue;                       
                         } else
                         {
                             student.Meal.StudentCode = student.StudentCode;

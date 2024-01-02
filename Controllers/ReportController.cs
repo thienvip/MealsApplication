@@ -77,6 +77,7 @@ namespace MealApplication.Controllers
             }
 
             _cache.Set("students", students);
+
             return Json(new
             {
                 draw = data.draw,

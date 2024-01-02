@@ -8,6 +8,13 @@
 
   <ItemGroup>
     <None Include="wwwroot\lib\flag-icon-css\.github\FUNDING.yml" />
+    <None Include="wwwroot\lib\kartik-v-bootstrap-fileinput-9022178\.github\CODE_OF_CONDUCT.md" />
+    <None Include="wwwroot\lib\kartik-v-bootstrap-fileinput-9022178\.github\config.yml" />
+    <None Include="wwwroot\lib\kartik-v-bootstrap-fileinput-9022178\.github\CONTRIBUTING.md" />
+    <None Include="wwwroot\lib\kartik-v-bootstrap-fileinput-9022178\.github\FUNDING.yml" />
+    <None Include="wwwroot\lib\kartik-v-bootstrap-fileinput-9022178\.github\ISSUE_TEMPLATE.md" />
+    <None Include="wwwroot\lib\kartik-v-bootstrap-fileinput-9022178\.github\PULL_REQUEST_TEMPLATE.md" />
+    <None Include="wwwroot\lib\kartik-v-bootstrap-fileinput-9022178\.github\stale.yml" />
   </ItemGroup>
 
   <ItemGroup>
